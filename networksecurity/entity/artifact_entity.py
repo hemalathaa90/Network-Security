@@ -22,4 +22,4 @@ class ModelEvaluationArtifact():
 
 @dataclass
 class ModelPusherArtifact():
-    pass
+    pass 
