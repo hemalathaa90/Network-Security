@@ -4,31 +4,32 @@ import os
 from networksecurity.constant import training_pipeline
 
 print(training_pipeline.ARTIFACT_DIR)
+print(training_pipeline.PIPELINE_NAME)
 
-class TrainingPipelineConfig()
+class TrainingPipelineConfig:
     def __init__(self):
         pass
 
-class DataIngestionConfig()
+class DataIngestionConfig:
     def __init__(self):
         pass
 
-class DataValidationConfig()
+class DataValidationConfig:
     def __init__(self):
         pass
 
-class DataTransformationConfig()
+class DataTransformationConfig:
     def __init__(self):
         pass
 
-class ModelTrainerConfig()
+class ModelTrainerConfig:
     def __init__(self):
         pass
 
-class ModelEvaluationConfig()
+class ModelEvaluationConfig:
     def __init__(self):
         pass
 
-class ModelPusherConfig()
+class ModelPusherConfig:
     def __init__(self):
         pass
