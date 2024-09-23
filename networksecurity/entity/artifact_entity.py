@@ -1,25 +1,26 @@
 from dataclasses import dataclass
 
 @dataclass
-class DataIngestionArtifact():
+class DataIngestionArtifact:
     pass
 
 @dataclass
-class DataValidationArtifact():
+class DataValidationArtifact:
+    trained_file_path: str
+    test_file_path: str
+
+@dataclass
+class DataTransformationArtifact:
     pass
 
 @dataclass
-class DataTransformationArtifact():
+class ModelTrainerArtifact:
     pass
 
 @dataclass
-class ModelTrainerArtifact():
+class ModelEvaluationArtifact:
     pass
 
 @dataclass
-class ModelEvaluationArtifact():
-    pass
-
-@dataclass
-class ModelPusherArtifact():
+class ModelPusherArtifact:
     pass 
