@@ -28,6 +28,39 @@ class ModelTrainer:
 
     def perform_hyper_parameter_tunig(self):
         pass
+    '''
+    def perform_hyper_parameter_tuning(self, x_train, y_train):
+        """
+        Perform hyperparameter tuning using GridSearchCV
+        """
+        try:
+            param_grid = {
+                'n_estimators': [50, 100, 200],
+                'max_depth': [3, 5, 7],
+                'learning_rate': [0.01, 0.1, 0.2],
+                'subsample': [0.7, 0.8, 1.0]
+            }
+
+            xgb_clf = XGBClassifier()
+            
+            # Using GridSearchCV for hyperparameter tuning
+            grid_search = GridSearchCV(estimator=xgb_clf,
+                                       param_grid=param_grid,
+                                       scoring='f1', # or any other metric you prefer
+                                       n_jobs=-1,  # use all processors
+                                       cv=3,       # 3-fold cross-validation
+                                       verbose=2)
+
+            logging.info("Starting hyperparameter tuning...")
+            grid_search.fit(x_train, y_train)
+
+            logging.info(f"Best Parameters from Hyperparameter Tuning: {grid_search.best_params_}")
+            return grid_search.best_estimator_
+
+        except Exception as e:
+            raise NetworkSecurityException(e, sys)
+
+    '''
     
 
     def train_model(self,x_train,y_train):
