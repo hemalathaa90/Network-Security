@@ -107,11 +107,11 @@ class TrainingPipeline:
     def run_pipeline(self):
         try:
             data_ingestion_artifact = self.start_data_ingestion()
-            #print(f"Data Ingestion Artifact: {data_ingestion_artifact}")
+            print(f"Data Ingestion Artifact: {data_ingestion_artifact}")
         
             # Start data validation
             data_validation_artifact = self.start_data_validation(data_ingestion_artifact=data_ingestion_artifact)
-            #print(f"Data Validation Artifact: {data_validation_artifact}")
+            print(f"Data Validation Artifact: {data_validation_artifact}")
             #start data transformation
             data_transformation_artifact=self.start_data_transformation(data_validation_artifact=data_validation_artifact)
             print(data_transformation_artifact)
