@@ -110,12 +110,17 @@ class TrainingPipeline:
             return  model_eval_artifact
         except Exception as e:
             raise NetworkSecurityException(e,sys)
+        
 
-    def start_model_pusher(self):
+    def start_model_pusher(self,model_eval_artifact:ModelEvaluationArtifact):
+
         try:
-            pass
-        except Exception as e:
-            raise NetworkSecurityException(e,sys)     
+            model_pusher_config = ModelPusherConfig(training_pipeline_config=self.training_pipeline_config)
+            model_pusher = ModelPusher(model_pusher_config, model_eval_artifact)
+            model_pusher_artifact = model_pusher.initiate_model_pusher()
+            return model_pusher_artifact
+        except  Exception as e:
+            raise  NetworkSecurityException(e,sys)     
             
             
     def run_pipeline(self):
@@ -137,12 +142,8 @@ class TrainingPipeline:
             print(model_eval_artifact)
             model_pusher_artifact = self.start_model_pusher(model_eval_artifact)
 
-            TrainingPipeline.is_pipeline_running=False
-            self.sync_artifact_dir_to_s3()
-            self.sync_saved_model_dir_to_s3()
+            
         except Exception as e:
-            self.sync_artifact_dir_to_s3()
-            TrainingPipeline.is_pipeline_running=False
             raise NetworkSecurityException(e,sys)
 
       
