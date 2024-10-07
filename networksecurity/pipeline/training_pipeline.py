@@ -30,11 +30,15 @@ from networksecurity.entity.artifact_entity import(
     ModelPusherArtifact
 )
 
-class TrainingPipeline:
-    is_pipeline_running = False
-    def __init__(self):
-        self.training_pipeline_config = TrainingPipelineConfig()
+from networksecurity.cloud.s3_syncer import S3Sync
+from networksecurity.constant.training_pipeline import TRAINING_BUCKET_NAME
+from networksecurity.constant.training_pipeline import SAVED_MODEL_DIR
 
+class TrainingPipeline:
+    is_pipeline_running=False
+    def __init__(self):
+         self.training_pipeline_config = TrainingPipelineConfig()
+         self.s3_sync = S3Sync()
     
 
     def start_data_ingestion(self):
@@ -123,24 +127,40 @@ class TrainingPipeline:
             raise  NetworkSecurityException(e,sys)     
             
             
+    def sync_artifact_dir_to_s3(self):
+        try:
+            aws_bucket_url = f"s3://{TRAINING_BUCKET_NAME}/artifact/{self.training_pipeline_config.timestamp}"
+            self.s3_sync.sync_folder_to_s3(folder = self.training_pipeline_config.artifact_dir,aws_bucket_url=aws_bucket_url)
+        except Exception as e:
+            raise NetworkSecurityException(e,sys)
+            
+    def sync_saved_model_dir_to_s3(self):
+        try:
+            aws_bucket_url = f"s3://{TRAINING_BUCKET_NAME}/{SAVED_MODEL_DIR}"
+            self.s3_sync.sync_folder_to_s3(folder = SAVED_MODEL_DIR,aws_bucket_url=aws_bucket_url)
+        except Exception as e:
+            raise NetworkSecurityException(e,sys)  
+        
     def run_pipeline(self):
         try:
-            data_ingestion_artifact = self.start_data_ingestion()
-            print(f"Data Ingestion Artifact: {data_ingestion_artifact}")
-        
-            # Start data validation
-            data_validation_artifact = self.start_data_validation(data_ingestion_artifact=data_ingestion_artifact)
-            print(f"Data Validation Artifact: {data_validation_artifact}")
-            #start data transformation
+            TrainingPipeline.is_pipeline_running=True
+            
+            data_ingestion_artifact=self.start_data_ingestion()
+            #print(data_ingestion_artifact)
+            data_validation_artifact=self.start_data_validation(data_ingestion_artifact=data_ingestion_artifact)
+            #print(data_validation_artifact)
             data_transformation_artifact=self.start_data_transformation(data_validation_artifact=data_validation_artifact)
-            print(data_transformation_artifact)
+            #print(data_transformation_artifact)
+            
             model_trainer_artifact=self.start_model_trainer(data_transformation_artifact=data_transformation_artifact)
             model_eval_artifact=self.start_model_evaluation(data_validation_artifact=data_validation_artifact,model_trainer_artifact=model_trainer_artifact)
             if not model_eval_artifact.is_model_accepted:
                 #raise Exception("Trained model is not better than the best model")
                 print("Trained model is not better than the best model")
             print(model_eval_artifact)
+            
             model_pusher_artifact = self.start_model_pusher(model_eval_artifact)
+            
             TrainingPipeline.is_pipeline_running=False
             self.sync_artifact_dir_to_s3()
             self.sync_saved_model_dir_to_s3()
@@ -148,15 +168,4 @@ class TrainingPipeline:
             self.sync_artifact_dir_to_s3()
             TrainingPipeline.is_pipeline_running=False
             raise NetworkSecurityException(e,sys)
-
-
-      
         
-    '''def run_pipeline(self):
-        try:
-            data_ingestion_artifact=self.start_data_ingestion()
-            print(data_ingestion_artifact)
-            data_validation_artifact=self.start_data_validation(data_ingestion_artifact=data_ingestion_artifact)
-            #print(data_validation_artifact)
-        except Exception as e:
-            raise NetworkSecurityException(e,sys)'''
