@@ -83,10 +83,11 @@ async def predict_route(request: Request,file: UploadFile = File(...)):
         
         y_pred = latest_model.predict(df)
         df['predicted_column'] = y_pred
-        df['predicted_column'].replace(-1, 0)
-        #return df.to_json()
+        df['predicted_column'].replace(-1, 0,inplace=True)
+        
+        return df.to_json()
         table_html = df.to_html(classes='table table-striped')
-        #print(table_html)
+        print(table_html)
         return templates.TemplateResponse("table.html", {"request": request, "table": table_html})
         
     except Exception as e:
